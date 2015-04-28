@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.Base64;
 import com.loopj.android.http.RequestParams;
 
 import org.apache.http.Header;
@@ -17,6 +18,13 @@ import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
+
+import java.nio.charset.Charset;
 
 /**
  * Created by javier.gomez on 22/04/2015.
@@ -24,6 +32,7 @@ import org.json.JSONObject;
 public class ConfigureTableActivity extends Activity {
     Button button;
     ProgressDialog prgDialog;
+    HttpHeaders httpHeaders;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,9 +55,31 @@ public class ConfigureTableActivity extends Activity {
         }
     }
 
+    private HttpHeaders createHeaders(final String username, final String password ){
+        HttpHeaders headers =  new HttpHeaders(){
+            {
+                String auth = username + ":" + password;
+                byte[] encodedAuth = Base64.encode(
+                        auth.getBytes(Charset.forName("US-ASCII")),Base64.DEFAULT);
+                String authHeader = "Basic " + new String( encodedAuth );
+                set( "Authorization", authHeader );
+            }
+        };
+        headers.add("Content-Type", "application/xml");
+        headers.add("Accept", "application/xml");
+
+        return headers;
+    }
+
     public void getTableWS(RequestParams params) {
         prgDialog.show();
-        AsyncHttpClient client = new AsyncHttpClient();
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<JSONObject> response;
+        httpHeaders = this.createHeaders("admin", "admin");
+        String url = "http://192.168.10.224:8080/tables/gettable";
+        response = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<Object>(httpHeaders), JSONObject.class, params);
+        Toast.makeText(getApplicationContext(), response.toString(), Toast.LENGTH_LONG).show();
+        /*AsyncHttpClient client = new AsyncHttpClient();
         client.setBasicAuth("admin","admin");
         client.get("http://192.168.10.224:8080/tables/gettable", params, new AsyncHttpResponseHandler() {
             @Override
@@ -66,7 +97,6 @@ public class ConfigureTableActivity extends Activity {
                         Toast.makeText(getApplicationContext(), obj.getString("error_msg"), Toast.LENGTH_LONG).show();
                     }
                 } catch (JSONException e) {
-                    // TODO Auto-generated catch block
                     Toast.makeText(getApplicationContext(), "Error Occured [Server's JSON response might be invalid]!", Toast.LENGTH_LONG).show();
                     e.printStackTrace();
 
@@ -90,7 +120,7 @@ public class ConfigureTableActivity extends Activity {
                     Toast.makeText(getApplicationContext(), "Unexpected Error occcured! [Most common Error: Device might not be connected to Internet or remote server is not up and running]", Toast.LENGTH_LONG).show();
                 }
             }
-        });
+        });*/
     }
 
     public static boolean isNotNull(String txt) {
