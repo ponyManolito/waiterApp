@@ -1,0 +1,68 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".ConfigureTableActivity"
+    android:background="@color/blue_config">
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="5dip" >
+
+        <!-- View title -->
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dip"
+            android:text="@string/title_activity_configuration"
+            android:textSize="35sp"
+            android:textStyle="bold" />
+
+        <!-- Num table label -->
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dip"
+            android:textSize="22sp"
+            android:text="@string/num_table_label" />
+
+        <!-- Num table field -->
+        <EditText
+            android:id="@+id/numTable"
+            android:layout_width="fill_parent"
+            android:layout_marginBottom="12dip"
+            android:background="@color/white"
+            android:textSize="20sp"
+            android:layout_height="wrap_content" android:hint="Mesa"/>
+
+        <!-- Description label -->
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dip"
+            android:textSize="22sp"
+            android:text="@string/description_label" />
+
+        <!-- Description field -->
+        <EditText
+            android:id="@+id/descriptionTable"
+            android:layout_width="fill_parent"
+            android:background="@color/white"
+            android:textSize="20sp"
+            android:layout_height="wrap_content" android:hint="Descripción"/>
+
+        <Button
+            android:id="@+id/btnAccept"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dip"
+            android:onClick="getTable"
+            android:text="@string/button_accept_configuration"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+</RelativeLayout>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Waiter</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_configuration">Configuration</string>
+    <string name="title_activity_home">Pony Manolito</string>
+    <string name="num_table_label">Número de mesa</string>
+    <string name="description_label">Descripción</string>
+    <string name="button_accept_configuration">Aceptar</string>
+
+    <color name="blue_config">#0052CC</color>
+    <color name="white">#FFFFFF</color>
+</resources>
