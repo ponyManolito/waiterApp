@@ -59,7 +59,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="40dip"
-            android:onClick="getTable"
+            android:onClick="assignTable"
             android:text="@string/button_accept_configuration"
             android:textStyle="bold" />
 
