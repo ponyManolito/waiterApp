@@ -2,6 +2,7 @@ package com.app.waiter;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -29,6 +30,7 @@ import java.util.List;
  * Created by javier.gomez on 22/04/2015.
  */
 public class ConfigureTableActivity extends Activity {
+    public final static String TABLE_NUMBER = "com.app.waiter.TABLE_NUMBER";
     ProgressDialog prgDialog;
 
     @Override
@@ -53,7 +55,7 @@ public class ConfigureTableActivity extends Activity {
                                     description.getText().toString());
     }
 
-    public static int assignTableWS(String... urls) {
+    public static boolean assignTableWS(String... urls) {
         //JSONObject obj = null;
         HttpAuthentication authHeader = new HttpBasicAuthentication("admin", "admin");
         HttpHeaders requestHeaders = new HttpHeaders();
@@ -71,8 +73,8 @@ public class ConfigureTableActivity extends Activity {
 
         String url = urls[0] + paramString;
 
-        ResponseEntity<Integer> responseEntity = restTemplate.exchange(url, HttpMethod.POST,
-                requestEntity, Integer.class);
+        ResponseEntity<Boolean> responseEntity = restTemplate.exchange(url, HttpMethod.POST,
+                requestEntity, Boolean.class);
         return responseEntity.getBody();
     }
 
@@ -97,6 +99,14 @@ public class ConfigureTableActivity extends Activity {
         return obj;
     }
 
+    public void goToHomePage() {
+        Intent intent = new Intent(this, MainWaiter.class);
+        EditText numTable = (EditText) findViewById(R.id.numTable);
+        String table = numTable.getText().toString();
+        intent.putExtra(TABLE_NUMBER, table);
+        startActivity(intent);
+    }
+
     public static boolean isNotNull(String txt) {
         return txt != null && txt.trim().length() > 0 ? true : false;
     }
@@ -106,13 +116,13 @@ public class ConfigureTableActivity extends Activity {
         protected String doInBackground(String... urls) {
             String result = "";
             if (urls[0].contains("assignTable")) {
-                int res = assignTableWS(urls);
-                if (res == 0) {
+                try {
+                    assignTableWS(urls);
                     result = "Mesa asignada";
-                } else  if (res == 1) {
-                    result = "No existe ese numero de mesa";
-                } else {
-                    result = "Numero de mesa ya asignado";
+                    goToHomePage();
+                    finish();
+                } catch (Exception e) {
+                    result = e.getMessage();
                 }
             }
             // Just for testing

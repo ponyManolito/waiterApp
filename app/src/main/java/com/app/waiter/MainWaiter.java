@@ -1,9 +1,11 @@
 package com.app.waiter;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 
 public class MainWaiter extends ActionBarActivity {
@@ -11,7 +13,13 @@ public class MainWaiter extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_configure_table);
+        setContentView(R.layout.activity_main_waiter);
+
+        Intent intent = getIntent();
+        String numTable = intent.getStringExtra(ConfigureTableActivity.TABLE_NUMBER);
+
+        TextView textTable = (TextView) findViewById(R.id.numTableText);
+        textTable.setText("Mesa: " + numTable);
     }
 
 
