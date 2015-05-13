@@ -92,12 +92,12 @@ public class MainWaiter extends ActionBarActivity implements ActionBar.TabListen
 
     @Override
     public void onTabSelected(ActionBar.Tab tab, android.support.v4.app.FragmentTransaction fragmentTransaction) {
-
+        viewPager.setCurrentItem(tab.getPosition());
     }
 
     @Override
     public void onTabUnselected(ActionBar.Tab tab, android.support.v4.app.FragmentTransaction fragmentTransaction) {
-        viewPager.setCurrentItem(tab.getPosition());
+
     }
 
     @Override
