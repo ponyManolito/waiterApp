@@ -115,7 +115,11 @@ public class ConfigureTableActivity extends Activity {
         @Override
         protected String doInBackground(String... urls) {
             String result = "";
-            if (urls[0].contains("assignTable")) {
+            // TODO exiting authentication
+            goToHomePage();
+            finish();
+            //
+            /*if (urls[0].contains("assignTable")) {
                 try {
                     assignTableWS(urls);
                     result = "Mesa asignada";
@@ -133,7 +137,7 @@ public class ConfigureTableActivity extends Activity {
                 } catch (Exception e) {
                     Log.d("HttpAsyncTask", e.getLocalizedMessage());
                 }
-            }
+            }*/
             return result;
         }
         @Override

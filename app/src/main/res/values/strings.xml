@@ -11,4 +11,14 @@
 
     <color name="blue_config">#0052CC</color>
     <color name="white">#FFFFFF</color>
+    <color name="color1">#fff3ff28</color>
+    <color name="color2">#ffb92cff</color>
+    <color name="color3">#ff3838ff</color>
+    <color name="color4">#ffff2f25</color>
+    <color name="color5">#ff56ff45</color>
+
+    <string name="title_activity_home_waiter">Restaurant Name</string>
+    <string name="title_section1">Section 1</string>
+    <string name="title_section2">Section 2</string>
+    <string name="title_section3">Section 3</string>
 </resources>
