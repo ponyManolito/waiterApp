@@ -28,7 +28,7 @@ public class SwipeTabFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home_waiter, null);
-        TextView tv = (TextView) view.findViewById(R.id.textView);
+        TextView tv = (TextView) view.findViewById(R.id.textViewTitle);
         tv.setText(tab);
         view.setBackgroundResource(color);
         return view;

@@ -2,18 +2,38 @@ package com.app.waiter;
 
 
 import android.app.FragmentTransaction;
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.app.waiter.tabswipe.adapter.TabPagerAdapter;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.message.BasicNameValuePair;
+import org.springframework.http.HttpAuthentication;
+import org.springframework.http.HttpBasicAuthentication;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.json.GsonHttpMessageConverter;
+import org.springframework.web.client.RestTemplate;
+
+import java.util.LinkedList;
+import java.util.List;
 
 
 public class MainWaiter extends ActionBarActivity implements ActionBar.TabListener {
@@ -21,6 +41,8 @@ public class MainWaiter extends ActionBarActivity implements ActionBar.TabListen
     private ViewPager viewPager;
     private TabPagerAdapter tAdapter;
     private ActionBar actionBar;
+
+    private String numTable;
 
     private String[] tabTitles = {"Inicio", "Menu del dia", "Carta", "Pedido", "Contacto"};
 
@@ -30,7 +52,7 @@ public class MainWaiter extends ActionBarActivity implements ActionBar.TabListen
         setContentView(R.layout.activity_main_waiter);
 
         Intent intent = getIntent();
-        String numTable = intent.getStringExtra(ConfigureTableActivity.TABLE_NUMBER);
+        numTable = intent.getStringExtra(ConfigureTableActivity.TABLE_NUMBER);
 
         //TextView textTable = (TextView) findViewById(R.id.numTableText);
         //textTable.setText("Mesa: " + numTable);
@@ -103,5 +125,62 @@ public class MainWaiter extends ActionBarActivity implements ActionBar.TabListen
     @Override
     public void onTabReselected(ActionBar.Tab tab, android.support.v4.app.FragmentTransaction fragmentTransaction) {
 
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+            unassignTable();
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    private class HttpAsyncTask extends AsyncTask<String,Void,String> {
+        @Override
+        protected String doInBackground(String... urls) {
+            String result = "";
+            if (urls[0].contains("unassignTable")) {
+                try {
+                    unassignTableWS(urls);
+                    result = "Mesa liberada";
+                    finish();
+                } catch (Exception e) {
+                    result = e.getMessage();
+                }
+            }
+            return result;
+        }
+        @Override
+        protected void onPostExecute(String result) {
+            // To check the data
+            Toast.makeText(getBaseContext(), "Received: " + result, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public void unassignTable() {
+        new HttpAsyncTask().execute("http://192.168.10.224:8080/tables/unassignTable?",
+                numTable.toString());
+    }
+
+    public static boolean unassignTableWS(String... urls) {
+        HttpAuthentication authHeader = new HttpBasicAuthentication("admin", "admin");
+        HttpHeaders requestHeaders = new HttpHeaders();
+        requestHeaders.setAuthorization(authHeader);
+        HttpEntity<?> requestEntity = new HttpEntity<Object>(requestHeaders);
+
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
+
+        List<NameValuePair> params = new LinkedList<NameValuePair>();
+        params.add(new BasicNameValuePair("name", urls[1]));
+
+        String paramString = URLEncodedUtils.format(params, "utf-8");
+
+        String url = urls[0] + paramString;
+
+        ResponseEntity<Boolean> responseEntity = restTemplate.exchange(url, HttpMethod.POST,
+                requestEntity, Boolean.class);
+        return responseEntity.getBody();
     }
 }

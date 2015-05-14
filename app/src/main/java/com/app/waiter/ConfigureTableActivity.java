@@ -41,11 +41,6 @@ public class ConfigureTableActivity extends Activity {
         prgDialog = new ProgressDialog(this);
     }
 
-    public void getTable(View view) {
-        prgDialog.show();
-        new HttpAsyncTask().execute("http://192.168.10.224:8080/tables/gettable?id=1");
-    }
-
     public void assignTable(View view) {
         prgDialog.show();
         EditText numTable = (EditText) findViewById(R.id.numTable);
@@ -56,7 +51,6 @@ public class ConfigureTableActivity extends Activity {
     }
 
     public static boolean assignTableWS(String... urls) {
-        //JSONObject obj = null;
         HttpAuthentication authHeader = new HttpBasicAuthentication("admin", "admin");
         HttpHeaders requestHeaders = new HttpHeaders();
         requestHeaders.setAuthorization(authHeader);
@@ -78,27 +72,6 @@ public class ConfigureTableActivity extends Activity {
         return responseEntity.getBody();
     }
 
-    public static JSONObject getTableWS(String url) {
-        JSONObject obj = null;
-        HttpAuthentication authHeader = new HttpBasicAuthentication("admin", "admin");
-        HttpHeaders requestHeaders = new HttpHeaders();
-        requestHeaders.setAuthorization(authHeader);
-        HttpEntity<?> requestEntity = new HttpEntity<Object>(requestHeaders);
-
-        RestTemplate restTemplate = new RestTemplate();
-        restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
-
-        ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.GET,
-                                                                requestEntity, String.class);
-        String res = responseEntity.getBody();
-        try {
-            obj = new JSONObject(res);
-        } catch (Exception e) {
-            Log.d("InputStream", e.getLocalizedMessage());
-        }
-        return obj;
-    }
-
     public void goToHomePage() {
         Intent intent = new Intent(this, MainWaiter.class);
         EditText numTable = (EditText) findViewById(R.id.numTable);
@@ -115,11 +88,7 @@ public class ConfigureTableActivity extends Activity {
         @Override
         protected String doInBackground(String... urls) {
             String result = "";
-            // TODO exiting authentication
-            goToHomePage();
-            finish();
-            //
-            /*if (urls[0].contains("assignTable")) {
+            if (urls[0].contains("assignTable")) {
                 try {
                     assignTableWS(urls);
                     result = "Mesa asignada";
@@ -129,15 +98,6 @@ public class ConfigureTableActivity extends Activity {
                     result = e.getMessage();
                 }
             }
-            // Just for testing
-            if (urls[0].contains("getTable")) {
-                JSONObject obj = getTableWS(urls[0]);
-                try {
-                    result = obj.getString("name") + " - " + obj.getString("description");
-                } catch (Exception e) {
-                    Log.d("HttpAsyncTask", e.getLocalizedMessage());
-                }
-            }*/
             return result;
         }
         @Override
