@@ -42,7 +42,6 @@ public class ConfigureTableActivity extends Activity {
     }
 
     public void assignTable(View view) {
-        prgDialog.show();
         EditText numTable = (EditText) findViewById(R.id.numTable);
         EditText description = (EditText) findViewById(R.id.descriptionTable);
         new HttpAsyncTask().execute("http://192.168.10.224:8080/tables/assignTable?",
@@ -101,9 +100,15 @@ public class ConfigureTableActivity extends Activity {
             return result;
         }
         @Override
+        protected void onPreExecute() {
+            prgDialog.setMessage("Asignando mesa...");
+            prgDialog.show();
+        }
+
+        @Override
         protected void onPostExecute(String result) {
             // To check the data
-            prgDialog.hide();
+            prgDialog.dismiss();
             Toast.makeText(getBaseContext(), "Received: " + result, Toast.LENGTH_LONG).show();
         }
     }

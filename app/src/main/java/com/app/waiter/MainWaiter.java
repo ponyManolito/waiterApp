@@ -15,6 +15,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,6 +42,7 @@ public class MainWaiter extends ActionBarActivity implements ActionBar.TabListen
     private ViewPager viewPager;
     private TabPagerAdapter tAdapter;
     private ActionBar actionBar;
+    ProgressDialog prgDialog;
 
     private String numTable;
 
@@ -50,6 +52,7 @@ public class MainWaiter extends ActionBarActivity implements ActionBar.TabListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_waiter);
+        prgDialog = new ProgressDialog(this);
 
         Intent intent = getIntent();
         numTable = intent.getStringExtra(ConfigureTableActivity.TABLE_NUMBER);
@@ -131,9 +134,13 @@ public class MainWaiter extends ActionBarActivity implements ActionBar.TabListen
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if ((keyCode == KeyEvent.KEYCODE_BACK)) {
             unassignTable();
-            return true;
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    public void goToConfigurePage() {
+        Intent intent = new Intent(this, ConfigureTableActivity.class);
+        startActivity(intent);
     }
 
     private class HttpAsyncTask extends AsyncTask<String,Void,String> {
@@ -144,6 +151,7 @@ public class MainWaiter extends ActionBarActivity implements ActionBar.TabListen
                 try {
                     unassignTableWS(urls);
                     result = "Mesa liberada";
+                    goToConfigurePage();
                     finish();
                 } catch (Exception e) {
                     result = e.getMessage();
@@ -151,9 +159,17 @@ public class MainWaiter extends ActionBarActivity implements ActionBar.TabListen
             }
             return result;
         }
+
+        @Override
+        protected void onPreExecute() {
+            prgDialog.setMessage("Liberando mesa...");
+            prgDialog.show();
+        }
+
         @Override
         protected void onPostExecute(String result) {
             // To check the data
+            prgDialog.dismiss();
             Toast.makeText(getBaseContext(), "Received: " + result, Toast.LENGTH_LONG).show();
         }
     }
