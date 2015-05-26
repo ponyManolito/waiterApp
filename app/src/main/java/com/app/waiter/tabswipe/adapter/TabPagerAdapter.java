@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
 import com.app.waiter.R;
+import com.app.waiter.tabswipe.fragment.MenuTabFragment;
 import com.app.waiter.tabswipe.fragment.SwipeTabFragment;
 
 /**
@@ -39,9 +40,10 @@ public class TabPagerAdapter extends FragmentStatePagerAdapter {
             case 2:
                 // Menu fragment activity
                 tab = "Menu";
-                colorResId = R.color.color3;
-                break;
-                //return new MenuFragment();
+                bundle.putString("tab",tab);
+                MenuTabFragment menuTabFragment = new MenuTabFragment();
+                menuTabFragment.setArguments(bundle);
+                return menuTabFragment;
             case 3:
                 // Order fragment activity
                 tab = "Order";
