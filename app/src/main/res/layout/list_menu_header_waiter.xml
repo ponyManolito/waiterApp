@@ -7,9 +7,14 @@
     <TextView
         android:id="@+id/itemSeparator"
         style="?android:attr/listSeparatorTextViewStyle"
+        android:background="@color/menuHeaderBackground"
+        android:listSelector="@android:color/transparent"
+        android:cacheColorHint="@android:color/transparent"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:textColor="@android:color/black" />
+        android:paddingTop="7dp"
+        android:paddingBottom="7dp"
+        android:textColor="@color/menuHeaderText" />
 
 
 </LinearLayout>
