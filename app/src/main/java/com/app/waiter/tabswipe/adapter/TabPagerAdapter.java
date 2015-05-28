@@ -39,8 +39,6 @@ public class TabPagerAdapter extends FragmentStatePagerAdapter {
                 //return new DayMenuFragment();
             case 2:
                 // Menu fragment activity
-                tab = "Menu";
-                bundle.putString("tab",tab);
                 MenuTabFragment menuTabFragment = new MenuTabFragment();
                 menuTabFragment.setArguments(bundle);
                 return menuTabFragment;
