@@ -61,15 +61,11 @@ public class MainWaiter extends ActionBarActivity implements ActionBar.TabListen
         Intent intent = getIntent();
         numTable = intent.getStringExtra(ConfigureTableActivity.TABLE_NUMBER);
 
-        //TextView textTable = (TextView) findViewById(R.id.numTableText);
-        //textTable.setText("Mesa: " + numTable);
-
         // Tab initialization
         viewPager = (ViewPager) findViewById(R.id.pager);
         actionBar = getSupportActionBar();
         tAdapter = new TabPagerAdapter(getSupportFragmentManager());
 
-        //actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeButtonEnabled(false);
         viewPager.setAdapter(tAdapter);
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
