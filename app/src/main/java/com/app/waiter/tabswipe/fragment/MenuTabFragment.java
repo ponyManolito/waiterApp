@@ -1,26 +1,17 @@
 package com.app.waiter.tabswipe.fragment;
 
-import android.app.ListFragment;
-import android.content.Context;
-import android.database.MatrixCursor;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.app.waiter.Model.Adapter.MenuArrayAdapter;
 import com.app.waiter.Model.DataModel.Product;
@@ -32,6 +23,7 @@ import com.google.gson.internal.LinkedTreeMap;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.http.HttpAuthentication;
 import org.springframework.http.HttpBasicAuthentication;
@@ -43,17 +35,14 @@ import org.springframework.http.converter.json.GsonHttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
 /**
  * Created by javier.gomez on 13/05/2015.
  */
 public class MenuTabFragment extends Fragment {
-    private String tab;
     private List<Object> dataset;
     private TextView itemDescription;
     private Button btnAddOrder;
@@ -85,7 +74,15 @@ public class MenuTabFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Object item = dataset.get(position);
                 if (item instanceof Content) {
-                    itemDescription.setText(((Content) item).getDescription());
+
+                    final Content content = (Content) item;
+                    itemDescription.setText(content.getDescription());
+                    btnAddOrder.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+
+                        }
+                    });
                     btnAddOrder.setEnabled(true);
                 }
             }
@@ -144,6 +141,7 @@ public class MenuTabFragment extends Fragment {
                     content.setMainText(product.getName());
                     content.setSubText(String.valueOf(product.getPrice()));
                     content.setDescription(product.getDescription());
+                    content.setType(headerName);
                     list.add(content);
                 }
             }
@@ -258,12 +256,10 @@ public class MenuTabFragment extends Fragment {
     private class ProductTask extends AsyncTask<String,Void,Product> {
         @Override
         protected Product doInBackground(String... urls) {
-            if (urls[0].contains("getproduct")) {
-                try {
-                    return getSingleProductWS(urls);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+            try {
+                return getSingleProductWS(urls);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
             return null;
         }
@@ -275,6 +271,62 @@ public class MenuTabFragment extends Fragment {
         protected void onPostExecute(Product result) {
             // To check the data
         }
+    }
+
+    /*private class OrderTask extends AsyncTask<String,Void,Boolean> {
+        @Override
+        protected Boolean doInBackground(String... urls) {
+            if (urls[0].contains("addorder")) {
+                try {
+                    return getSingleProductWS(urls);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            return false;
+        }
+        @Override
+        protected void onPreExecute() {
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            // To check the data
+        }
+    }*/
+
+    public List<LinkedTreeMap> addOrder(String type) throws ExecutionException, InterruptedException {
+        return new HttpAsyncTask().execute("http://192.168.10.224:8080/orders/insert?",
+                type).get();
+    }
+
+    public static List<LinkedTreeMap> addOrderWS(String... urls) {
+        HttpAuthentication authHeader = new HttpBasicAuthentication("admin", "admin");
+        HttpHeaders requestHeaders = new HttpHeaders();
+        requestHeaders.setAuthorization(authHeader);
+        HttpEntity<?> requestEntity = new HttpEntity<Object>(requestHeaders);
+
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
+
+        JSONObject json = new JSONObject();
+        JSONObject jsonOrder = new JSONObject();
+        try {
+            json.put("obj", jsonOrder);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        List<NameValuePair> params = new LinkedList<NameValuePair>();
+        params.add(new BasicNameValuePair("type", urls[1]));
+
+        String paramString = URLEncodedUtils.format(params, "utf-8");
+
+        String url = urls[0] + paramString;
+
+        ResponseEntity<ArrayList> responseEntity = restTemplate.exchange(url, HttpMethod.GET,
+                requestEntity,ArrayList.class);
+        return (List<LinkedTreeMap>) responseEntity.getBody();
     }
 
     private class LoadImage extends AsyncTask<String,Void,Bitmap> {

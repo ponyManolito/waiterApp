@@ -7,6 +7,8 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
 import com.app.waiter.R;
+import com.app.waiter.tabswipe.fragment.CheckOrderTabFragment;
+import com.app.waiter.tabswipe.fragment.HomeTabFragment;
 import com.app.waiter.tabswipe.fragment.MenuTabFragment;
 import com.app.waiter.tabswipe.fragment.SwipeTabFragment;
 
@@ -27,9 +29,8 @@ public class TabPagerAdapter extends FragmentStatePagerAdapter {
         switch (position) {
             case 0:
                 // Home page activity
-                tab = "Home";
-                colorResId = R.color.color1;
-                break;
+                HomeTabFragment homeTabFragment = new HomeTabFragment();
+                return homeTabFragment;
                 //return new HomePageFragment();
             case 1:
                 // Day menu fragment activity
@@ -40,13 +41,11 @@ public class TabPagerAdapter extends FragmentStatePagerAdapter {
             case 2:
                 // Menu fragment activity
                 MenuTabFragment menuTabFragment = new MenuTabFragment();
-                menuTabFragment.setArguments(bundle);
                 return menuTabFragment;
             case 3:
                 // Order fragment activity
-                tab = "Order";
-                colorResId = R.color.color4;
-                break;
+                CheckOrderTabFragment checkOrderTabFragment = new CheckOrderTabFragment();
+                return checkOrderTabFragment;
                 //return new OrderFragment();
             case 4:
                 // Contact fragment activity

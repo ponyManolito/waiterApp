@@ -10,6 +10,8 @@ public class Content {
 
     private String description;
 
+    private String type;
+
     public String getMainText() {
         return mainText;
     }
@@ -32,6 +34,14 @@ public class Content {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }
 
