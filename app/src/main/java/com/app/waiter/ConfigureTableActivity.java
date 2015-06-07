@@ -11,6 +11,8 @@ import android.view.Window;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.app.waiter.Common.GlobalVars;
+
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.message.BasicNameValuePair;
@@ -32,6 +34,7 @@ import java.util.List;
  */
 public class ConfigureTableActivity extends Activity {
     public final static String TABLE_NUMBER = "com.app.waiter.TABLE_NUMBER";
+    private static GlobalVars globalVariables;
     ProgressDialog prgDialog;
 
     @Override
@@ -40,19 +43,31 @@ public class ConfigureTableActivity extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_configure_table);
 
+        configureGlobalVars();
+
         prgDialog = new ProgressDialog(this);
+    }
+
+    public void configureGlobalVars() {
+        globalVariables = (GlobalVars) getApplicationContext();
+        globalVariables.setServerIP("192.168.1.39");
+        globalVariables.setPort("8080");
+        globalVariables.setUserServer("admin");
+        globalVariables.setPassServer("admin");
     }
 
     public void assignTable(View view) {
         EditText numTable = (EditText) findViewById(R.id.numTable);
         EditText description = (EditText) findViewById(R.id.descriptionTable);
-        new HttpAsyncTask().execute("http://192.168.10.224:8080/tables/assignTable?",
+        String baseURL = "http://" + globalVariables.getServerIP() + ":" + globalVariables.getPort();
+        new HttpAsyncTask().execute(baseURL + "/tables/assignTable?",
                                     numTable.getText().toString(),
                                     description.getText().toString());
     }
 
     public static boolean assignTableWS(String... urls) {
-        HttpAuthentication authHeader = new HttpBasicAuthentication("admin", "admin");
+        HttpAuthentication authHeader = new HttpBasicAuthentication(globalVariables.getUserServer(),
+                globalVariables.getPassServer());
         HttpHeaders requestHeaders = new HttpHeaders();
         requestHeaders.setAuthorization(authHeader);
         HttpEntity<?> requestEntity = new HttpEntity<Object>(requestHeaders);

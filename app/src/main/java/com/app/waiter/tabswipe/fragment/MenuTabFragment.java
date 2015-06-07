@@ -1,9 +1,14 @@
 package com.app.waiter.tabswipe.fragment;
 
+import android.annotation.TargetApi;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +18,8 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.app.waiter.Common.GlobalVars;
+import com.app.waiter.ConfigureTableActivity;
 import com.app.waiter.Model.Adapter.MenuArrayAdapter;
 import com.app.waiter.Model.DataModel.Product;
 import com.app.waiter.Model.List.Content;
@@ -47,10 +54,12 @@ public class MenuTabFragment extends Fragment {
     private TextView itemDescription;
     private Button btnAddOrder;
     private ImageView itemImage;
+    private static GlobalVars globalVariables;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        globalVariables = (GlobalVars) getActivity().getApplicationContext();
         Bundle bundle = getArguments();
     }
 
@@ -70,13 +79,20 @@ public class MenuTabFragment extends Fragment {
         ListView listView = (ListView) view.findViewById(R.id.listViewMenu);
         listView.setAdapter(new MenuArrayAdapter(view.getContext(), dataset));
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @TargetApi(Build.VERSION_CODES.KITKAT)
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Object item = dataset.get(position);
                 if (item instanceof Content) {
-
                     final Content content = (Content) item;
                     itemDescription.setText(content.getDescription());
+                    if (content.getImageData() != null) {
+                        Bitmap bitmap = decodeImage(content);
+                        itemImage.setImageBitmap(Bitmap.createScaledBitmap(bitmap, 254, 199, false));
+                    } else {
+                        Drawable drawable = getResources().getDrawable(R.drawable.estandar);
+                        itemImage.setImageDrawable(drawable);
+                    }
                     btnAddOrder.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -89,6 +105,14 @@ public class MenuTabFragment extends Fragment {
         });
 
         return view;
+    }
+
+    private Bitmap decodeImage(Content content) {
+        String byteImage = content.getImageData();
+        String encodedImage = byteImage.split("base64")[1];
+        byte[] decodedString = Base64.decode(encodedImage, Base64.DEFAULT);
+        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+        return decodedByte;
     }
 
     private String[] getTypesHeaders() {
@@ -141,6 +165,7 @@ public class MenuTabFragment extends Fragment {
                     content.setMainText(product.getName());
                     content.setSubText(String.valueOf(product.getPrice()));
                     content.setDescription(product.getDescription());
+                    content.setImageData(product.getImageData());
                     content.setType(headerName);
                     list.add(content);
                 }
@@ -151,78 +176,6 @@ public class MenuTabFragment extends Fragment {
             e.printStackTrace();
         }
         return list;
-    }
-
-    public List<LinkedTreeMap> getHeaders() throws ExecutionException, InterruptedException {
-        return new HttpAsyncTask().execute("http://192.168.10.224:8080/types/getall").get();
-    }
-
-    public List<LinkedTreeMap> getProducts(String type) throws ExecutionException, InterruptedException {
-        return new HttpAsyncTask().execute("http://192.168.10.224:8080/products/getallproducts?",
-                type).get();
-    }
-
-    public static List<LinkedTreeMap> getProductsWS(String... urls) {
-        HttpAuthentication authHeader = new HttpBasicAuthentication("admin", "admin");
-        HttpHeaders requestHeaders = new HttpHeaders();
-        requestHeaders.setAuthorization(authHeader);
-        HttpEntity<?> requestEntity = new HttpEntity<Object>(requestHeaders);
-
-        RestTemplate restTemplate = new RestTemplate();
-        restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
-
-        List<NameValuePair> params = new LinkedList<NameValuePair>();
-        params.add(new BasicNameValuePair("type", urls[1]));
-
-        String paramString = URLEncodedUtils.format(params, "utf-8");
-
-        String url = urls[0] + paramString;
-
-        ResponseEntity<ArrayList> responseEntity = restTemplate.exchange(url, HttpMethod.GET,
-                requestEntity,ArrayList.class);
-        return (List<LinkedTreeMap>) responseEntity.getBody();
-    }
-
-    public static List<LinkedTreeMap> getTypesWS(String... urls) {
-        HttpAuthentication authHeader = new HttpBasicAuthentication("admin", "admin");
-        HttpHeaders requestHeaders = new HttpHeaders();
-        requestHeaders.setAuthorization(authHeader);
-        HttpEntity<?> requestEntity = new HttpEntity<Object>(requestHeaders);
-
-        RestTemplate restTemplate = new RestTemplate();
-        restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
-
-        String url = urls[0];
-
-        ResponseEntity<ArrayList> responseEntity = restTemplate.exchange(url, HttpMethod.GET,
-                requestEntity,ArrayList.class);
-        return (List<LinkedTreeMap>) responseEntity.getBody();
-    }
-
-    public Product getSingleProduct(int id) throws ExecutionException, InterruptedException {
-        return new ProductTask().execute("http://192.168.10.224:8080/products/getproduct?",
-                String.valueOf(id)).get();
-    }
-
-    public static Product getSingleProductWS(String... urls) {
-        HttpAuthentication authHeader = new HttpBasicAuthentication("admin", "admin");
-        HttpHeaders requestHeaders = new HttpHeaders();
-        requestHeaders.setAuthorization(authHeader);
-        HttpEntity<?> requestEntity = new HttpEntity<Object>(requestHeaders);
-
-        RestTemplate restTemplate = new RestTemplate();
-        restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
-
-        List<NameValuePair> params = new LinkedList<NameValuePair>();
-        params.add(new BasicNameValuePair("id", urls[1]));
-
-        String paramString = URLEncodedUtils.format(params, "utf-8");
-
-        String url = urls[0] + paramString;
-
-        ResponseEntity<Product> responseEntity = restTemplate.exchange(url, HttpMethod.GET,
-                requestEntity,Product.class);
-        return responseEntity.getBody();
     }
 
     private class HttpAsyncTask extends AsyncTask<String,Void,List<LinkedTreeMap>> {
@@ -253,6 +206,56 @@ public class MenuTabFragment extends Fragment {
         }
     }
 
+    public List<LinkedTreeMap> getHeaders() throws ExecutionException, InterruptedException {
+        String baseURL = "http://" + globalVariables.getServerIP() + ":" + globalVariables.getPort();
+        return new HttpAsyncTask().execute(baseURL + "/types/getall").get();
+    }
+
+    public List<LinkedTreeMap> getProducts(String type) throws ExecutionException, InterruptedException {
+        String baseURL = "http://" + globalVariables.getServerIP() + ":" + globalVariables.getPort();
+        return new HttpAsyncTask().execute(baseURL + "/products/getallproducts?",
+                type).get();
+    }
+
+    public static List<LinkedTreeMap> getProductsWS(String... urls) {
+        HttpAuthentication authHeader = new HttpBasicAuthentication(globalVariables.getUserServer(),
+                globalVariables.getPassServer());
+        HttpHeaders requestHeaders = new HttpHeaders();
+        requestHeaders.setAuthorization(authHeader);
+        HttpEntity<?> requestEntity = new HttpEntity<Object>(requestHeaders);
+
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
+
+        List<NameValuePair> params = new LinkedList<NameValuePair>();
+        params.add(new BasicNameValuePair("type", urls[1]));
+
+        String paramString = URLEncodedUtils.format(params, "utf-8");
+
+        String url = urls[0] + paramString;
+
+        ResponseEntity<ArrayList> responseEntity = restTemplate.exchange(url, HttpMethod.GET,
+                requestEntity,ArrayList.class);
+        return (List<LinkedTreeMap>) responseEntity.getBody();
+    }
+
+    public static List<LinkedTreeMap> getTypesWS(String... urls) {
+        HttpAuthentication authHeader = new HttpBasicAuthentication(globalVariables.getUserServer(),
+                globalVariables.getPassServer());
+        HttpHeaders requestHeaders = new HttpHeaders();
+        requestHeaders.setAuthorization(authHeader);
+        HttpEntity<?> requestEntity = new HttpEntity<Object>(requestHeaders);
+
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
+
+        String url = urls[0];
+
+        ResponseEntity<ArrayList> responseEntity = restTemplate.exchange(url, HttpMethod.GET,
+                requestEntity,ArrayList.class);
+        return (List<LinkedTreeMap>) responseEntity.getBody();
+    }
+
     private class ProductTask extends AsyncTask<String,Void,Product> {
         @Override
         protected Product doInBackground(String... urls) {
@@ -271,6 +274,34 @@ public class MenuTabFragment extends Fragment {
         protected void onPostExecute(Product result) {
             // To check the data
         }
+    }
+
+    public Product getSingleProduct(int id) throws ExecutionException, InterruptedException {
+        String baseURL = "http://" + globalVariables.getServerIP() + ":" + globalVariables.getPort();
+        return new ProductTask().execute(baseURL + "/products/getproduct?",
+                String.valueOf(id)).get();
+    }
+
+    public static Product getSingleProductWS(String... urls) {
+        HttpAuthentication authHeader = new HttpBasicAuthentication(globalVariables.getUserServer(),
+                globalVariables.getPassServer());
+        HttpHeaders requestHeaders = new HttpHeaders();
+        requestHeaders.setAuthorization(authHeader);
+        HttpEntity<?> requestEntity = new HttpEntity<Object>(requestHeaders);
+
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
+
+        List<NameValuePair> params = new LinkedList<NameValuePair>();
+        params.add(new BasicNameValuePair("id", urls[1]));
+
+        String paramString = URLEncodedUtils.format(params, "utf-8");
+
+        String url = urls[0] + paramString;
+
+        ResponseEntity<Product> responseEntity = restTemplate.exchange(url, HttpMethod.GET,
+                requestEntity,Product.class);
+        return responseEntity.getBody();
     }
 
     /*private class OrderTask extends AsyncTask<String,Void,Boolean> {
@@ -296,12 +327,14 @@ public class MenuTabFragment extends Fragment {
     }*/
 
     public List<LinkedTreeMap> addOrder(String type) throws ExecutionException, InterruptedException {
-        return new HttpAsyncTask().execute("http://192.168.10.224:8080/orders/insert?",
+        String baseURL = "http://" + globalVariables.getServerIP() + ":" + globalVariables.getPort();
+        return new HttpAsyncTask().execute(baseURL + "/orders/insert?",
                 type).get();
     }
 
     public static List<LinkedTreeMap> addOrderWS(String... urls) {
-        HttpAuthentication authHeader = new HttpBasicAuthentication("admin", "admin");
+        HttpAuthentication authHeader = new HttpBasicAuthentication(globalVariables.getUserServer(),
+                globalVariables.getPassServer());
         HttpHeaders requestHeaders = new HttpHeaders();
         requestHeaders.setAuthorization(authHeader);
         HttpEntity<?> requestEntity = new HttpEntity<Object>(requestHeaders);
@@ -346,7 +379,5 @@ public class MenuTabFragment extends Fragment {
             // To check the data
         }
     }
-
-
 
 }

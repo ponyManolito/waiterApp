@@ -10,6 +10,8 @@ public class Content {
 
     private String description;
 
+    private String imageData;
+
     private String type;
 
     public String getMainText() {
@@ -42,6 +44,14 @@ public class Content {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getImageData() {
+        return imageData;
+    }
+
+    public void setImageData(String imageData) {
+        this.imageData = imageData;
     }
 }
 

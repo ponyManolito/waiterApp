@@ -22,6 +22,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.app.waiter.Common.GlobalVars;
 import com.app.waiter.tabswipe.adapter.TabPagerAdapter;
 
 import org.apache.http.NameValuePair;
@@ -46,6 +47,7 @@ public class MainWaiter extends ActionBarActivity implements ActionBar.TabListen
     private TabPagerAdapter tAdapter;
     private ActionBar actionBar;
     ProgressDialog prgDialog;
+    private static GlobalVars globalVariables;
 
     private String numTable;
 
@@ -57,6 +59,7 @@ public class MainWaiter extends ActionBarActivity implements ActionBar.TabListen
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         setContentView(R.layout.activity_main_waiter);
         prgDialog = new ProgressDialog(this);
+        globalVariables = (GlobalVars) getApplicationContext();
 
         Intent intent = getIntent();
         numTable = intent.getStringExtra(ConfigureTableActivity.TABLE_NUMBER);
@@ -175,12 +178,14 @@ public class MainWaiter extends ActionBarActivity implements ActionBar.TabListen
     }
 
     public void unassignTable() {
-        new HttpAsyncTask().execute("http://192.168.10.224:8080/tables/unassignTable?",
+        String baseURL = "http://" + globalVariables.getServerIP() + ":" + globalVariables.getPort();
+        new HttpAsyncTask().execute(baseURL + "/tables/unassignTable?",
                 numTable.toString());
     }
 
     public static boolean unassignTableWS(String... urls) {
-        HttpAuthentication authHeader = new HttpBasicAuthentication("admin", "admin");
+        HttpAuthentication authHeader = new HttpBasicAuthentication(globalVariables.getUserServer(),
+                globalVariables.getPassServer());
         HttpHeaders requestHeaders = new HttpHeaders();
         requestHeaders.setAuthorization(authHeader);
         HttpEntity<?> requestEntity = new HttpEntity<Object>(requestHeaders);
