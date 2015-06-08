@@ -79,7 +79,6 @@ public class MenuTabFragment extends Fragment {
         ListView listView = (ListView) view.findViewById(R.id.listViewMenu);
         listView.setAdapter(new MenuArrayAdapter(view.getContext(), dataset));
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @TargetApi(Build.VERSION_CODES.KITKAT)
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Object item = dataset.get(position);
@@ -88,7 +87,7 @@ public class MenuTabFragment extends Fragment {
                     itemDescription.setText(content.getDescription());
                     if (content.getImageData() != null) {
                         Bitmap bitmap = decodeImage(content);
-                        itemImage.setImageBitmap(Bitmap.createScaledBitmap(bitmap, 254, 199, false));
+                        itemImage.setImageBitmap(bitmap);//Bitmap.createScaledBitmap(bitmap, 254, 199, false));
                     } else {
                         Drawable drawable = getResources().getDrawable(R.drawable.estandar);
                         itemImage.setImageDrawable(drawable);

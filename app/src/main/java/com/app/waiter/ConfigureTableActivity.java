@@ -50,7 +50,7 @@ public class ConfigureTableActivity extends Activity {
 
     public void configureGlobalVars() {
         globalVariables = (GlobalVars) getApplicationContext();
-        globalVariables.setServerIP("192.168.1.39");
+        globalVariables.setServerIP("192.168.10.224");
         globalVariables.setPort("8080");
         globalVariables.setUserServer("admin");
         globalVariables.setPassServer("admin");
