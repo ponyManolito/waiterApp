@@ -1,29 +1,24 @@
 package com.app.waiter.tabswipe.fragment;
 
-import android.annotation.TargetApi;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ExpandableListView;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.app.waiter.Common.GlobalVars;
-import com.app.waiter.ConfigureTableActivity;
-import com.app.waiter.Model.Adapter.MenuArrayAdapter;
+import com.app.waiter.Model.Adapter.ExpandableListAdapter;
 import com.app.waiter.Model.DataModel.Product;
 import com.app.waiter.Model.List.Content;
-import com.app.waiter.Model.List.Header;
 import com.app.waiter.R;
 import com.google.gson.internal.LinkedTreeMap;
 
@@ -42,6 +37,7 @@ import org.springframework.http.converter.json.GsonHttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -50,10 +46,12 @@ import java.util.concurrent.ExecutionException;
  * Created by javier.gomez on 13/05/2015.
  */
 public class MenuTabFragment extends Fragment {
-    private List<Object> dataset;
+    private HashMap<String, List<Content>> dataset;
+    private List<String> headers;
     private TextView itemDescription;
     private Button btnAddOrder;
     private ImageView itemImage;
+    private ExpandableListView listView;
     private static GlobalVars globalVariables;
 
     @Override
@@ -71,35 +69,41 @@ public class MenuTabFragment extends Fragment {
         itemDescription = (TextView) view.findViewById(R.id.menuItemDescription);
         itemImage = (ImageView) view.findViewById(R.id.menuItemImage);
         btnAddOrder = (Button) view.findViewById(R.id.btnAddOrder);
+        headers = getTypesHeaders();
 
-        // SQL query, then FOR state
-        String[] headers = getTypesHeaders();
-        dataset = fillData(headers);
-
-        ListView listView = (ListView) view.findViewById(R.id.listViewMenu);
-        listView.setAdapter(new MenuArrayAdapter(view.getContext(), dataset));
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        listView = (ExpandableListView) view.findViewById(R.id.listViewMenu);
+        dataset = new HashMap<String, List<Content>>();
+        listView.setAdapter(new ExpandableListAdapter(view.getContext(), headers, dataset));
+        listView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Object item = dataset.get(position);
-                if (item instanceof Content) {
-                    final Content content = (Content) item;
-                    itemDescription.setText(content.getDescription());
-                    if (content.getImageData() != null) {
-                        Bitmap bitmap = decodeImage(content);
-                        itemImage.setImageBitmap(bitmap);//Bitmap.createScaledBitmap(bitmap, 254, 199, false));
-                    } else {
-                        Drawable drawable = getResources().getDrawable(R.drawable.estandar);
-                        itemImage.setImageDrawable(drawable);
-                    }
-                    btnAddOrder.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-
-                        }
-                    });
-                    btnAddOrder.setEnabled(true);
+            public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
+                final Content content = dataset.get(headers.get(groupPosition)).get(childPosition);
+                itemDescription.setText(content.getDescription());
+                if (content.getImageData() != null) {
+                    Bitmap bitmap = decodeImage(content);
+                    itemImage.setImageBitmap(bitmap);
+                } else {
+                    Drawable drawable = getResources().getDrawable(R.drawable.estandar);
+                    itemImage.setImageDrawable(drawable);
                 }
+                btnAddOrder.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                    }
+                });
+                btnAddOrder.setEnabled(true);
+                return false;
+            }
+        });
+        listView.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
+            @Override
+            public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
+                String header = headers.get(groupPosition);
+                if (dataset.get(header) == null) {
+                    dataset.put(header, getDataByHeader(header));
+                }
+                return false;
             }
         });
 
@@ -114,15 +118,13 @@ public class MenuTabFragment extends Fragment {
         return decodedByte;
     }
 
-    private String[] getTypesHeaders() {
+    private List<String> getTypesHeaders() {
         try {
+            List<String> headers = new ArrayList<String>();
             List<LinkedTreeMap> listHeaders = getHeaders();
-            String[] headers = new String[listHeaders.size()];
-            int i = 0;
             for (LinkedTreeMap l : listHeaders) {
                 String type = ((String) l.get("name"));
-                headers[i] = type;
-                i++;
+                headers.add(type);
             }
             return headers;
         } catch (ExecutionException e) {
@@ -149,30 +151,26 @@ public class MenuTabFragment extends Fragment {
         return listProducts;
     }
 
-    private List<Object> fillData(String[] headers) {
-        List<Object> list = new ArrayList<Object>();
+    private List<Content> getDataByHeader(String header) {
+        List<Content> list = new ArrayList<Content>();
         Content content = null;
-        Header header = null;
         try {
-            for (String headerName : headers) {
-                header = new Header();
-                header.setTitle(headerName);
-                list.add(header);
-                List<Product> listProducts = convertToContent(getProducts(headerName));
-                for (Product product : listProducts) {
-                    content = new Content();
-                    content.setMainText(product.getName());
-                    content.setSubText(String.valueOf(product.getPrice()));
-                    content.setDescription(product.getDescription());
-                    content.setImageData(product.getImageData());
-                    content.setType(headerName);
-                    list.add(content);
-                }
+            List<Product> listProducts = convertToContent(getProducts(header));
+            for (Product product : listProducts) {
+                content = new Content();
+                content.setMainText(product.getName());
+                content.setSubText(String.valueOf(product.getPrice()));
+                content.setDescription(product.getDescription());
+                content.setImageData(product.getImageData());
+                content.setType(header);
+                list.add(content);
             }
         } catch (ExecutionException e) {
             e.printStackTrace();
+            return null;
         } catch (InterruptedException e) {
             e.printStackTrace();
+            return null;
         }
         return list;
     }
@@ -359,24 +357,6 @@ public class MenuTabFragment extends Fragment {
         ResponseEntity<ArrayList> responseEntity = restTemplate.exchange(url, HttpMethod.GET,
                 requestEntity,ArrayList.class);
         return (List<LinkedTreeMap>) responseEntity.getBody();
-    }
-
-    private class LoadImage extends AsyncTask<String,Void,Bitmap> {
-        @Override
-        protected Bitmap doInBackground(String... urls) {
-            if (urls[0].contains("getall")) {
-
-            }
-            return null;
-        }
-        @Override
-        protected void onPreExecute() {
-        }
-
-        @Override
-        protected void onPostExecute(Bitmap result) {
-            // To check the data
-        }
     }
 
 }
