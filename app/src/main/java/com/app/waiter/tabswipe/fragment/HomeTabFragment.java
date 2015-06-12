@@ -1,50 +1,27 @@
 package com.app.waiter.tabswipe.fragment;
 
+import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.GridLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
-
-import com.app.waiter.Model.Adapter.MenuArrayAdapter;
-import com.app.waiter.Model.DataModel.Product;
-import com.app.waiter.Model.List.Content;
-import com.app.waiter.Model.List.Header;
 import com.app.waiter.R;
-import com.google.gson.internal.LinkedTreeMap;
-
-import org.apache.http.NameValuePair;
-import org.apache.http.client.utils.URLEncodedUtils;
-import org.apache.http.message.BasicNameValuePair;
-import org.springframework.http.HttpAuthentication;
-import org.springframework.http.HttpBasicAuthentication;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.json.GsonHttpMessageConverter;
-import org.springframework.web.client.RestTemplate;
-
-import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 /**
  * Created by javier.gomez on 13/05/2015.
  */
 public class HomeTabFragment extends Fragment {
-    private List<Object> dataset;
-    private TextView itemDescription;
-    private Button btnAddOrder;
-    private ImageView itemImage;
+    private ViewGroup layout;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -52,32 +29,41 @@ public class HomeTabFragment extends Fragment {
         Bundle bundle = getArguments();
     }
 
+    @SuppressLint("NewApi")
     @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home_waiter, null);
+        Drawable homeImage = getResources().getDrawable(R.drawable.sample_home_img);
+        Drawable btn1 = getResources().getDrawable(R.drawable.menu);
+        Drawable btn2 = getResources().getDrawable(R.drawable.menu_dia);
+        Drawable btn3 = getResources().getDrawable(R.drawable.pedidos);
+        Drawable btn4 = getResources().getDrawable(R.drawable.contacto);
+        view.setBackground(homeImage);
 
+        /* Not working
+        GridLayout gl = (GridLayout) view;
+
+        int height = view.getHeight();
+        int width = view.getWidth();
+
+        ImageButton img1 = new ImageButton(view.getContext());
+        img1.setImageDrawable(btn1);
+        img1.setMaxHeight(height/4);
+        img1.setMaxWidth(width / 4);
+        img1.setPadding(40,40,40,40);
+
+        ImageButton img2 = new ImageButton(view.getContext());
+        img1.setImageDrawable(btn2);
+        img1.setMaxHeight(height/4);
+        img1.setMaxWidth(width / 4);
+        img1.setPadding(40,40,40,40);
+
+        gl.addView(img1);
+        gl.addView(img2);
+        */
         return view;
     }
-
-    private class LoadImage extends AsyncTask<String,Void,Bitmap> {
-        @Override
-        protected Bitmap doInBackground(String... urls) {
-            if (urls[0].contains("getall")) {
-
-            }
-            return null;
-        }
-        @Override
-        protected void onPreExecute() {
-        }
-
-        @Override
-        protected void onPostExecute(Bitmap result) {
-            // To check the data
-        }
-    }
-
 
 
 }
