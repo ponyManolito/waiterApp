@@ -6,8 +6,6 @@ import java.util.List;
  * Created by javier.gomez on 03/06/2015.
  */
 public class InOrderType {
-    public int id;
-
     public String type;
 
     public String status;
@@ -16,19 +14,10 @@ public class InOrderType {
 
     public InOrderType() {}
 
-    public InOrderType(int id, String type, String status, List<InProductInOrder> products) {
-        this.id = id;
+    public InOrderType(String type, String status, List<InProductInOrder> products) {
         this.type = type;
         this.status = status;
         this.products = products;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getType() {

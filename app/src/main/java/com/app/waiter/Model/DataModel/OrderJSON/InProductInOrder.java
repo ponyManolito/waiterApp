@@ -4,26 +4,18 @@ package com.app.waiter.Model.DataModel.OrderJSON;
  * Created by javier.gomez on 03/06/2015.
  */
 public class InProductInOrder {
-    public int id;
-
     public int idProduct;
 
     public int quantity;
 
+    public double price;
+
     public InProductInOrder() {}
 
-    public InProductInOrder(int id, int idProduct, int quantity) {
-        this.id = id;
+    public InProductInOrder(int idProduct, int quantity, double price) {
         this.idProduct = idProduct;
         this.quantity = quantity;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
+        this.price = price;
     }
 
     public int getIdProduct() {
@@ -41,4 +33,16 @@ public class InProductInOrder {
     public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
+    public void increaseQuantity() { this.quantity++; }
+
+    public void decreaseQuantity() { if (quantity != 0) this.quantity--; }
 }

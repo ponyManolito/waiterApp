@@ -2,6 +2,8 @@ package com.app.waiter.Common;
 
 import android.app.Application;
 
+import com.app.waiter.Model.DataModel.OrderJSON.InOrder;
+
 /**
  * Created by Javier on 05/06/2015.
  */
@@ -10,6 +12,8 @@ public class GlobalVars extends Application {
     private String userServer;
     private String passServer;
     private String port;
+    private String table;
+    private InOrder order;
 
     public String getServerIP() {
         return serverIP;
@@ -43,4 +47,19 @@ public class GlobalVars extends Application {
         this.port = port;
     }
 
+    public String getTable() {
+        return table;
+    }
+
+    public void setTable(String table) {
+        this.table = table;
+    }
+
+    public InOrder getOrder() {
+        return order;
+    }
+
+    public void setOrder(InOrder order) {
+        this.order = order;
+    }
 }

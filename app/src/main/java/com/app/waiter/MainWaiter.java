@@ -23,6 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.app.waiter.Common.GlobalVars;
+import com.app.waiter.Model.DataModel.OrderJSON.InOrder;
 import com.app.waiter.tabswipe.adapter.TabPagerAdapter;
 
 import org.apache.http.NameValuePair;
@@ -61,8 +62,10 @@ public class MainWaiter extends ActionBarActivity implements ActionBar.TabListen
         prgDialog = new ProgressDialog(this);
         globalVariables = (GlobalVars) getApplicationContext();
 
+        globalVariables.setOrder(new InOrder());
+
         Intent intent = getIntent();
-        numTable = intent.getStringExtra(ConfigureTableActivity.TABLE_NUMBER);
+        globalVariables.setTable(intent.getStringExtra(ConfigureTableActivity.TABLE_NUMBER));
 
         // Tab initialization
         viewPager = (ViewPager) findViewById(R.id.pager);
