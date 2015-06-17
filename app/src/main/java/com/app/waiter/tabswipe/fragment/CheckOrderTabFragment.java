@@ -6,6 +6,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.app.waiter.Common.GlobalVars;
 import com.app.waiter.R;
 import java.util.List;
 
@@ -15,11 +17,12 @@ import java.util.List;
 public class CheckOrderTabFragment extends Fragment {
     private List<Object> dataset;
     private TextView itemCheckPrice;
+    private static GlobalVars globalVariables;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Bundle bundle = getArguments();
+        globalVariables = (GlobalVars) getActivity().getApplicationContext();
     }
 
     @Override
@@ -28,7 +31,7 @@ public class CheckOrderTabFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_check_order_waiter, null);
 
         itemCheckPrice = (TextView) view.findViewById(R.id.checkPrice);
-        itemCheckPrice.setText("Total: 0.00 €");
+        itemCheckPrice.setText("Total: "+ globalVariables.getOrder().getBill() + " €");
 
         return view;
     }

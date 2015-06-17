@@ -1,5 +1,6 @@
 package com.app.waiter.Model.DataModel.OrderJSON;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -13,7 +14,11 @@ public class InOrder {
 
     public List<InOrderType> types;
 
-    public InOrder() {}
+    public double bill;
+
+    public InOrder() {
+        types = new ArrayList<InOrderType>();
+    }
 
     public InOrder(int idTable, String description, List<InOrderType> types) {
         this.idTable = idTable;
@@ -45,4 +50,11 @@ public class InOrder {
         this.types = types;
     }
 
+    public void setBill(double bill) {
+        this.bill = bill;
+    }
+
+    public double getBill() {
+        return bill;
+    }
 }

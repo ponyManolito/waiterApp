@@ -1,5 +1,6 @@
 package com.app.waiter.Model.DataModel.OrderJSON;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -12,7 +13,9 @@ public class InOrderType {
 
     public List<InProductInOrder> products;
 
-    public InOrderType() {}
+    public InOrderType() {
+        products = new ArrayList<InProductInOrder>();
+    }
 
     public InOrderType(String type, String status, List<InProductInOrder> products) {
         this.type = type;

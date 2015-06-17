@@ -3,6 +3,10 @@ package com.app.waiter.Common;
 import android.app.Application;
 
 import com.app.waiter.Model.DataModel.OrderJSON.InOrder;
+import com.app.waiter.Model.List.Content;
+
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by Javier on 05/06/2015.
@@ -14,6 +18,7 @@ public class GlobalVars extends Application {
     private String port;
     private String table;
     private InOrder order;
+    private HashMap<String, List<Content>> dataset = new HashMap<String, List<Content>>();
 
     public String getServerIP() {
         return serverIP;
@@ -62,4 +67,9 @@ public class GlobalVars extends Application {
     public void setOrder(InOrder order) {
         this.order = order;
     }
+
+    public HashMap<String, List<Content>> getDataset() {
+        return dataset;
+    }
+
 }

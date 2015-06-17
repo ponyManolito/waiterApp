@@ -14,9 +14,13 @@ import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.app.waiter.Common.GlobalVars;
 import com.app.waiter.Model.Adapter.ExpandableListAdapter;
+import com.app.waiter.Model.DataModel.OrderJSON.InOrder;
+import com.app.waiter.Model.DataModel.OrderJSON.InOrderType;
+import com.app.waiter.Model.DataModel.OrderJSON.InProductInOrder;
 import com.app.waiter.Model.DataModel.Product;
 import com.app.waiter.Model.List.Content;
 import com.app.waiter.R;
@@ -46,7 +50,6 @@ import java.util.concurrent.ExecutionException;
  * Created by javier.gomez on 13/05/2015.
  */
 public class MenuTabFragment extends Fragment {
-    private HashMap<String, List<Content>> dataset;
     private List<String> headers;
     private TextView itemDescription;
     private Button btnAddOrder;
@@ -58,13 +61,12 @@ public class MenuTabFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         globalVariables = (GlobalVars) getActivity().getApplicationContext();
-        Bundle bundle = getArguments();
     }
 
     @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_menu_waiter, null);
+        final View view = inflater.inflate(R.layout.fragment_menu_waiter, null);
 
         itemDescription = (TextView) view.findViewById(R.id.menuItemDescription);
         itemImage = (ImageView) view.findViewById(R.id.menuItemImage);
@@ -72,12 +74,11 @@ public class MenuTabFragment extends Fragment {
         headers = getTypesHeaders();
 
         listView = (ExpandableListView) view.findViewById(R.id.listViewMenu);
-        dataset = new HashMap<String, List<Content>>();
-        listView.setAdapter(new ExpandableListAdapter(view.getContext(), headers, dataset));
+        listView.setAdapter(new ExpandableListAdapter(view.getContext(), headers, globalVariables.getDataset()));
         listView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
             @Override
             public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
-                final Content content = dataset.get(headers.get(groupPosition)).get(childPosition);
+                final Content content = globalVariables.getDataset().get(headers.get(groupPosition)).get(childPosition);
                 itemDescription.setText(content.getDescription());
                 if (content.getImageData() != null) {
                     Bitmap bitmap = decodeImage(content);
@@ -89,7 +90,39 @@ public class MenuTabFragment extends Fragment {
                 btnAddOrder.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-
+                        InOrder order = globalVariables.getOrder();
+                        boolean enc = false;
+                        for (InOrderType orderType : order.getTypes()) {
+                            if (orderType.getType().equals(content.getType())) {
+                                for (InProductInOrder productInOrder : orderType.getProducts()) {
+                                    if (productInOrder.getIdProduct() == content.getId()) {
+                                        enc = true;
+                                        productInOrder.increaseQuantity();
+                                        order.setBill(order.getBill() + content.getPrice());
+                                        break;
+                                    }
+                                }
+                                if (!enc) {
+                                    InProductInOrder productInOrder = new InProductInOrder(
+                                            content.getId(), 1, content.getPrice());
+                                    orderType.getProducts().add(productInOrder);
+                                    enc = true;
+                                } else {
+                                    break;
+                                }
+                            }
+                        }
+                        if (!enc) {
+                            InProductInOrder productInOrder = new InProductInOrder(
+                                    content.getId(), 1, content.getPrice());
+                            List<InProductInOrder> listProducts = new ArrayList<InProductInOrder>();
+                            listProducts.add(productInOrder);
+                            InOrderType orderType = new InOrderType(content.getType(), "Ordered",
+                                    listProducts);
+                            order.getTypes().add(orderType);
+                            order.setBill(order.getBill() + content.getPrice());
+                        }
+                        Toast.makeText(view.getContext(), "Plato añadido a la orden", Toast.LENGTH_SHORT).show();
                     }
                 });
                 btnAddOrder.setEnabled(true);
@@ -100,8 +133,8 @@ public class MenuTabFragment extends Fragment {
             @Override
             public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
                 String header = headers.get(groupPosition);
-                if (dataset.get(header) == null) {
-                    dataset.put(header, getDataByHeader(header));
+                if (globalVariables.getDataset().get(header) == null) {
+                    globalVariables.getDataset().put(header, getDataByHeader(header));
                 }
                 return false;
             }
@@ -158,11 +191,13 @@ public class MenuTabFragment extends Fragment {
             List<Product> listProducts = convertToContent(getProducts(header));
             for (Product product : listProducts) {
                 content = new Content();
+                content.setId(product.getId());
                 content.setMainText(product.getName());
                 content.setSubText(String.valueOf(product.getPrice()));
                 content.setDescription(product.getDescription());
                 content.setImageData(product.getImageData());
                 content.setType(header);
+                content.setPrice(product.getPrice());
                 list.add(content);
             }
         } catch (ExecutionException e) {
@@ -299,64 +334,6 @@ public class MenuTabFragment extends Fragment {
         ResponseEntity<Product> responseEntity = restTemplate.exchange(url, HttpMethod.GET,
                 requestEntity,Product.class);
         return responseEntity.getBody();
-    }
-
-    /*private class OrderTask extends AsyncTask<String,Void,Boolean> {
-        @Override
-        protected Boolean doInBackground(String... urls) {
-            if (urls[0].contains("addorder")) {
-                try {
-                    return getSingleProductWS(urls);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-            return false;
-        }
-        @Override
-        protected void onPreExecute() {
-        }
-
-        @Override
-        protected void onPostExecute(Boolean result) {
-            // To check the data
-        }
-    }*/
-
-    public List<LinkedTreeMap> addOrder(String type) throws ExecutionException, InterruptedException {
-        String baseURL = "http://" + globalVariables.getServerIP() + ":" + globalVariables.getPort();
-        return new HttpAsyncTask().execute(baseURL + "/orders/insert?",
-                type).get();
-    }
-
-    public static List<LinkedTreeMap> addOrderWS(String... urls) {
-        HttpAuthentication authHeader = new HttpBasicAuthentication(globalVariables.getUserServer(),
-                globalVariables.getPassServer());
-        HttpHeaders requestHeaders = new HttpHeaders();
-        requestHeaders.setAuthorization(authHeader);
-        HttpEntity<?> requestEntity = new HttpEntity<Object>(requestHeaders);
-
-        RestTemplate restTemplate = new RestTemplate();
-        restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
-
-        JSONObject json = new JSONObject();
-        JSONObject jsonOrder = new JSONObject();
-        try {
-            json.put("obj", jsonOrder);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        List<NameValuePair> params = new LinkedList<NameValuePair>();
-        params.add(new BasicNameValuePair("type", urls[1]));
-
-        String paramString = URLEncodedUtils.format(params, "utf-8");
-
-        String url = urls[0] + paramString;
-
-        ResponseEntity<ArrayList> responseEntity = restTemplate.exchange(url, HttpMethod.GET,
-                requestEntity,ArrayList.class);
-        return (List<LinkedTreeMap>) responseEntity.getBody();
     }
 
 }

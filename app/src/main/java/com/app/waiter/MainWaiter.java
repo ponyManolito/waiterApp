@@ -1,30 +1,23 @@
 package com.app.waiter;
 
-
-import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.AsyncTask;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
-import android.app.ActionBar.Tab;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
-import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.app.waiter.Common.GlobalVars;
 import com.app.waiter.Model.DataModel.OrderJSON.InOrder;
 import com.app.waiter.tabswipe.adapter.TabPagerAdapter;
+import com.app.waiter.tabswipe.fragment.MenuTabFragment;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
@@ -49,8 +42,6 @@ public class MainWaiter extends ActionBarActivity implements ActionBar.TabListen
     private ActionBar actionBar;
     ProgressDialog prgDialog;
     private static GlobalVars globalVariables;
-
-    private String numTable;
 
     private String[] tabTitles = {"Inicio", "Menu del dia", "Carta", "Pedido", "Contacto"};
 
@@ -183,7 +174,7 @@ public class MainWaiter extends ActionBarActivity implements ActionBar.TabListen
     public void unassignTable() {
         String baseURL = "http://" + globalVariables.getServerIP() + ":" + globalVariables.getPort();
         new HttpAsyncTask().execute(baseURL + "/tables/unassignTable?",
-                numTable.toString());
+                globalVariables.getTable());
     }
 
     public static boolean unassignTableWS(String... urls) {
