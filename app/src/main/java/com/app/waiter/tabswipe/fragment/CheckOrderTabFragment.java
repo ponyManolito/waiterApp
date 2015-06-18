@@ -15,7 +15,6 @@ import java.util.List;
  * Created by javier.gomez on 13/05/2015.
  */
 public class CheckOrderTabFragment extends Fragment {
-    private List<Object> dataset;
     private TextView itemCheckPrice;
     private static GlobalVars globalVariables;
 
@@ -36,4 +35,7 @@ public class CheckOrderTabFragment extends Fragment {
         return view;
     }
 
+    public void updateBill() {
+        itemCheckPrice.setText("Total: " + globalVariables.getOrder().getBill() + " €");
+    }
 }

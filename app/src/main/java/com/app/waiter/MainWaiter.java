@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.AsyncTask;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
@@ -17,6 +18,7 @@ import android.widget.Toast;
 import com.app.waiter.Common.GlobalVars;
 import com.app.waiter.Model.DataModel.OrderJSON.InOrder;
 import com.app.waiter.tabswipe.adapter.TabPagerAdapter;
+import com.app.waiter.tabswipe.fragment.CheckOrderTabFragment;
 import com.app.waiter.tabswipe.fragment.MenuTabFragment;
 
 import org.apache.http.NameValuePair;
@@ -78,6 +80,10 @@ public class MainWaiter extends ActionBarActivity implements ActionBar.TabListen
              * */
             @Override
             public void onPageSelected(int position) {
+                Fragment fragment = (Fragment) tAdapter.instantiateItem(viewPager, position);
+                if (fragment instanceof CheckOrderTabFragment) {
+                    ((CheckOrderTabFragment) fragment).updateBill();
+                }
                 actionBar.setSelectedNavigationItem(position);
             }
 
@@ -87,6 +93,7 @@ public class MainWaiter extends ActionBarActivity implements ActionBar.TabListen
             @Override
             public void onPageScrollStateChanged(int arg0) { }
         });
+        viewPager.setOffscreenPageLimit(5);
     }
 
 
