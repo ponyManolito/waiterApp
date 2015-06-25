@@ -6,14 +6,17 @@ package com.app.waiter.Model.DataModel.OrderJSON;
 public class InProductInOrder {
     public int idProduct;
 
+    public String name;
+
     public int quantity;
 
     public double price;
 
     public InProductInOrder() {}
 
-    public InProductInOrder(int idProduct, int quantity, double price) {
+    public InProductInOrder(int idProduct, String name, int quantity, double price) {
         this.idProduct = idProduct;
+        this.name = name;
         this.quantity = quantity;
         this.price = price;
     }
@@ -24,6 +27,14 @@ public class InProductInOrder {
 
     public void setIdProduct(int idProduct) {
         this.idProduct = idProduct;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public int getQuantity() {

@@ -10,6 +10,7 @@
     <string name="button_accept_configuration">Aceptar</string>
 
     <string name="button_add_order">Añadir</string>
+    <string name="button_check_order">Realizar Pedido</string>
 
     <color name="blue_config">#0052CC</color>
     <color name="white">#FFFFFF</color>

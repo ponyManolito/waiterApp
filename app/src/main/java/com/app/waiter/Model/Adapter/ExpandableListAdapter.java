@@ -3,6 +3,7 @@ package com.app.waiter.Model.Adapter;
 /**
  * Created by javier.gomez on 09/06/2015.
  */
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.List;
 
@@ -23,9 +24,11 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
     private List<String> _listDataHeader; // header titles
     // child data in format of header title, child title
     private HashMap<String, List<Content>> _listDataChild;
+    private DecimalFormat df;
 
     public ExpandableListAdapter(Context context, List<String> listDataHeader,
                                  HashMap<String, List<Content>> listChildData) {
+        df = new DecimalFormat("#.##");
         this._context = context;
         this._listDataHeader = listDataHeader;
         this._listDataChild = listChildData;
@@ -60,7 +63,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
                 .findViewById(R.id.itemPrice);
 
         txtListChild.setText(childText.getMainText());
-        txtListChildSub.setText(childText.getSubText());
+        txtListChildSub.setText(df.format(childText.getPrice()));
         return convertView;
     }
 

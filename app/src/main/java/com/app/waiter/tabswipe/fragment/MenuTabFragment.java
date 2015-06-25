@@ -101,7 +101,7 @@ public class MenuTabFragment extends Fragment {
                                 }
                                 if (!enc) {
                                     InProductInOrder productInOrder = new InProductInOrder(
-                                            content.getId(), 1, content.getPrice());
+                                            content.getId(), content.getMainText(), 1, content.getPrice());
                                     orderType.getProducts().add(productInOrder);
                                     enc = true;
                                 } else {
@@ -111,7 +111,7 @@ public class MenuTabFragment extends Fragment {
                         }
                         if (!enc) {
                             InProductInOrder productInOrder = new InProductInOrder(
-                                    content.getId(), 1, content.getPrice());
+                                    content.getId(), content.getMainText(),1, content.getPrice());
                             List<InProductInOrder> listProducts = new ArrayList<InProductInOrder>();
                             listProducts.add(productInOrder);
                             InOrderType orderType = new InOrderType(content.getType(), "Ordered",
