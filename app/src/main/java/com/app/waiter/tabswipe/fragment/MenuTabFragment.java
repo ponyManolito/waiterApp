@@ -103,6 +103,7 @@ public class MenuTabFragment extends Fragment {
                                     InProductInOrder productInOrder = new InProductInOrder(
                                             content.getId(), content.getMainText(), 1, content.getPrice());
                                     orderType.getProducts().add(productInOrder);
+                                    order.setBill(order.getBill() + content.getPrice());
                                     enc = true;
                                 } else {
                                     break;

@@ -96,6 +96,9 @@ public class MainWaiter extends ActionBarActivity implements ActionBar.TabListen
         viewPager.setOffscreenPageLimit(5);
     }
 
+    public TabPagerAdapter gettAdapter() {
+        return tAdapter;
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
