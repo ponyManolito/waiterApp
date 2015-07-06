@@ -43,7 +43,7 @@ public class MainWaiter extends ActionBarActivity implements ActionBar.TabListen
     private TabPagerAdapter tAdapter;
     private ActionBar actionBar;
     ProgressDialog prgDialog;
-    private static GlobalVars globalVariables;
+    private GlobalVars globalVariables;
 
     private String[] tabTitles = {"Inicio", "Menu del dia", "Carta", "Pedido", "Contacto"};
 
@@ -187,7 +187,7 @@ public class MainWaiter extends ActionBarActivity implements ActionBar.TabListen
                 globalVariables.getTable());
     }
 
-    public static boolean unassignTableWS(String... urls) {
+    public boolean unassignTableWS(String... urls) {
         HttpAuthentication authHeader = new HttpBasicAuthentication(globalVariables.getUserServer(),
                 globalVariables.getPassServer());
         HttpHeaders requestHeaders = new HttpHeaders();

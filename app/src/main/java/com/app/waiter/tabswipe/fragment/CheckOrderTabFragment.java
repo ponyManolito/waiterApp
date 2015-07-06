@@ -33,7 +33,7 @@ import java.util.List;
 public class CheckOrderTabFragment extends Fragment {
     private List<Object> listObjects;
     private TextView itemCheckPrice;
-    private static GlobalVars globalVariables;
+    private GlobalVars globalVariables;
     private View view;
     private DecimalFormat df;
     private ListView listView;

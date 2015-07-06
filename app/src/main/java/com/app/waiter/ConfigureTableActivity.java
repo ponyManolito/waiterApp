@@ -34,7 +34,7 @@ import java.util.List;
  */
 public class ConfigureTableActivity extends Activity {
     public final static String TABLE_NUMBER = "com.app.waiter.TABLE_NUMBER";
-    private static GlobalVars globalVariables;
+    private GlobalVars globalVariables;
     ProgressDialog prgDialog;
 
     @Override
@@ -65,7 +65,7 @@ public class ConfigureTableActivity extends Activity {
                                     description.getText().toString());
     }
 
-    public static boolean assignTableWS(String... urls) {
+    public boolean assignTableWS(String... urls) {
         HttpAuthentication authHeader = new HttpBasicAuthentication(globalVariables.getUserServer(),
                 globalVariables.getPassServer());
         HttpHeaders requestHeaders = new HttpHeaders();

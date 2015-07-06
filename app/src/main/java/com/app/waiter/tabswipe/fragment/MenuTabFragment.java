@@ -52,7 +52,7 @@ public class MenuTabFragment extends Fragment {
     private Button btnAddOrder;
     private ImageView itemImage;
     private ExpandableListView listView;
-    private static GlobalVars globalVariables;
+    private GlobalVars globalVariables;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -247,7 +247,7 @@ public class MenuTabFragment extends Fragment {
                 type).get();
     }
 
-    public static List<LinkedTreeMap> getProductsWS(String... urls) {
+    public List<LinkedTreeMap> getProductsWS(String... urls) {
         HttpAuthentication authHeader = new HttpBasicAuthentication(globalVariables.getUserServer(),
                 globalVariables.getPassServer());
         HttpHeaders requestHeaders = new HttpHeaders();
@@ -269,7 +269,7 @@ public class MenuTabFragment extends Fragment {
         return (List<LinkedTreeMap>) responseEntity.getBody();
     }
 
-    public static List<LinkedTreeMap> getTypesWS(String... urls) {
+    public List<LinkedTreeMap> getTypesWS(String... urls) {
         HttpAuthentication authHeader = new HttpBasicAuthentication(globalVariables.getUserServer(),
                 globalVariables.getPassServer());
         HttpHeaders requestHeaders = new HttpHeaders();
@@ -312,7 +312,7 @@ public class MenuTabFragment extends Fragment {
                 String.valueOf(id)).get();
     }
 
-    public static Product getSingleProductWS(String... urls) {
+    public Product getSingleProductWS(String... urls) {
         HttpAuthentication authHeader = new HttpBasicAuthentication(globalVariables.getUserServer(),
                 globalVariables.getPassServer());
         HttpHeaders requestHeaders = new HttpHeaders();
