@@ -155,7 +155,8 @@ public class MenuTabFragment extends Fragment {
             List<LinkedTreeMap> listHeaders = getHeaders();
             for (LinkedTreeMap l : listHeaders) {
                 String type = ((String) l.get("name"));
-                headers.add(type);
+                if (!type.toLowerCase().contains("menu"))
+                    headers.add(type);
             }
             return headers;
         } catch (ExecutionException e) {
