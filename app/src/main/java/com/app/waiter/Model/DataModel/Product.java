@@ -4,6 +4,7 @@ package com.app.waiter.Model.DataModel;
  * Created by javier.gomez on 28/05/2015.
  */
 public class Product {
+    private int id;
 
     private String name;
 
@@ -87,4 +88,11 @@ public class Product {
         this.price = price;
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 }

@@ -1,28 +1,25 @@
 package com.app.waiter;
 
-
-import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.AsyncTask;
-import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
-import android.app.ActionBar.Tab;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
-import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
+import com.app.waiter.Common.GlobalVars;
+import com.app.waiter.Model.DataModel.OrderJSON.InOrder;
 import com.app.waiter.tabswipe.adapter.TabPagerAdapter;
+import com.app.waiter.tabswipe.fragment.CheckOrderTabFragment;
+import com.app.waiter.tabswipe.fragment.MenuTabFragment;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
@@ -46,8 +43,7 @@ public class MainWaiter extends ActionBarActivity implements ActionBar.TabListen
     private TabPagerAdapter tAdapter;
     private ActionBar actionBar;
     ProgressDialog prgDialog;
-
-    private String numTable;
+    private GlobalVars globalVariables;
 
     private String[] tabTitles = {"Inicio", "Menu del dia", "Carta", "Pedido", "Contacto"};
 
@@ -57,9 +53,12 @@ public class MainWaiter extends ActionBarActivity implements ActionBar.TabListen
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         setContentView(R.layout.activity_main_waiter);
         prgDialog = new ProgressDialog(this);
+        globalVariables = (GlobalVars) getApplicationContext();
+
+        globalVariables.setOrder(new InOrder());
 
         Intent intent = getIntent();
-        numTable = intent.getStringExtra(ConfigureTableActivity.TABLE_NUMBER);
+        globalVariables.setTable(intent.getStringExtra(ConfigureTableActivity.TABLE_NUMBER));
 
         // Tab initialization
         viewPager = (ViewPager) findViewById(R.id.pager);
@@ -81,6 +80,10 @@ public class MainWaiter extends ActionBarActivity implements ActionBar.TabListen
              * */
             @Override
             public void onPageSelected(int position) {
+                Fragment fragment = (Fragment) tAdapter.instantiateItem(viewPager, position);
+                if (fragment instanceof CheckOrderTabFragment) {
+                    ((CheckOrderTabFragment) fragment).updateBill();
+                }
                 actionBar.setSelectedNavigationItem(position);
             }
 
@@ -90,8 +93,12 @@ public class MainWaiter extends ActionBarActivity implements ActionBar.TabListen
             @Override
             public void onPageScrollStateChanged(int arg0) { }
         });
+        viewPager.setOffscreenPageLimit(5);
     }
 
+    public TabPagerAdapter gettAdapter() {
+        return tAdapter;
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -175,12 +182,14 @@ public class MainWaiter extends ActionBarActivity implements ActionBar.TabListen
     }
 
     public void unassignTable() {
-        new HttpAsyncTask().execute("http://192.168.10.224:8080/tables/unassignTable?",
-                numTable.toString());
+        String baseURL = "http://" + globalVariables.getServerIP() + ":" + globalVariables.getPort();
+        new HttpAsyncTask().execute(baseURL + "/tables/unassignTable?",
+                globalVariables.getTable());
     }
 
-    public static boolean unassignTableWS(String... urls) {
-        HttpAuthentication authHeader = new HttpBasicAuthentication("admin", "admin");
+    public boolean unassignTableWS(String... urls) {
+        HttpAuthentication authHeader = new HttpBasicAuthentication(globalVariables.getUserServer(),
+                globalVariables.getPassServer());
         HttpHeaders requestHeaders = new HttpHeaders();
         requestHeaders.setAuthorization(authHeader);
         HttpEntity<?> requestEntity = new HttpEntity<Object>(requestHeaders);

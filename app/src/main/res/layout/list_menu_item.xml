@@ -12,7 +12,7 @@
         android:textColor="@android:color/black" /> -->
 
     <TextView
-        android:id="@+id/foodTitle"
+        android:id="@+id/itemTitle"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:paddingLeft="8dp"
@@ -24,7 +24,7 @@
         android:textStyle="bold" />
 
     <TextView
-        android:id="@+id/foodPrice"
+        android:id="@+id/itemPrice"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:paddingLeft="8dp"

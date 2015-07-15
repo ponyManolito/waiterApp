@@ -7,6 +7,9 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
 import com.app.waiter.R;
+import com.app.waiter.tabswipe.fragment.CheckOrderTabFragment;
+import com.app.waiter.tabswipe.fragment.DayMenuTabFragment;
+import com.app.waiter.tabswipe.fragment.HomeTabFragment;
 import com.app.waiter.tabswipe.fragment.MenuTabFragment;
 import com.app.waiter.tabswipe.fragment.SwipeTabFragment;
 
@@ -14,9 +17,17 @@ import com.app.waiter.tabswipe.fragment.SwipeTabFragment;
  * Created by javier.gomez on 05/05/2015.
  */
 public class TabPagerAdapter extends FragmentStatePagerAdapter {
+    private HomeTabFragment homeTabFragment;
+    private MenuTabFragment menuTabFragment;
+    private DayMenuTabFragment dayMenuTabFragment;
+    private CheckOrderTabFragment checkOrderTabFragment;
 
     public TabPagerAdapter(FragmentManager fm) {
         super(fm);
+        homeTabFragment = new HomeTabFragment();
+        dayMenuTabFragment = new DayMenuTabFragment();
+        menuTabFragment = new MenuTabFragment();
+        checkOrderTabFragment = new CheckOrderTabFragment();
     }
 
     @Override
@@ -26,34 +37,17 @@ public class TabPagerAdapter extends FragmentStatePagerAdapter {
         int colorResId = 0;
         switch (position) {
             case 0:
-                // Home page activity
-                tab = "Home";
-                colorResId = R.color.color1;
-                break;
-                //return new HomePageFragment();
+                return homeTabFragment;
             case 1:
-                // Day menu fragment activity
-                tab = "Day Menu";
-                colorResId = R.color.color2;
-                break;
-                //return new DayMenuFragment();
+                return dayMenuTabFragment;
             case 2:
-                // Menu fragment activity
-                MenuTabFragment menuTabFragment = new MenuTabFragment();
-                menuTabFragment.setArguments(bundle);
                 return menuTabFragment;
             case 3:
-                // Order fragment activity
-                tab = "Order";
-                colorResId = R.color.color4;
-                break;
-                //return new OrderFragment();
+                return checkOrderTabFragment;
             case 4:
-                // Contact fragment activity
                 tab = "Contact";
                 colorResId = R.color.color5;
                 break;
-                //return new ContactFragment();
         }
         bundle.putString("tab",tab);
         bundle.putInt("color", colorResId);
