@@ -78,11 +78,11 @@ public class DayMenuTabFragment extends Fragment {
         headers = getTypesHeaders();
 
         listView = (ExpandableListView) view.findViewById(R.id.listViewMenu);
-        listView.setAdapter(new ExpandableListAdapter(view.getContext(), headers, globalVariables.getDataset()));
+        listView.setAdapter(new ExpandableListAdapter(view.getContext(), headers, globalVariables.getDatasetMenu()));
         listView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
             @Override
             public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
-                final Content content = globalVariables.getDataset().get(headers.get(groupPosition)).get(childPosition);
+                final Content content = globalVariables.getDatasetMenu().get(headers.get(groupPosition)).get(childPosition);
                 itemDescription.setText(content.getDescription());
                 if (content.getImageData() != null) {
                     Bitmap bitmap = decodeImage(content);
@@ -138,8 +138,8 @@ public class DayMenuTabFragment extends Fragment {
             @Override
             public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
                 String header = headers.get(groupPosition);
-                if (globalVariables.getDataset().get(header) == null) {
-                    globalVariables.getDataset().put(header, getDataByHeaderAndMenu(header));
+                if (globalVariables.getDatasetMenu().get(header) == null) {
+                    globalVariables.getDatasetMenu().put(header, getDataByHeaderAndMenu(header));
                 }
                 return false;
             }
@@ -258,18 +258,19 @@ public class DayMenuTabFragment extends Fragment {
     public List<LinkedTreeMap> getProductsForMenuWS(String... urls) throws JSONException {
         HttpAuthentication authHeader = new HttpBasicAuthentication(globalVariables.getUserServer(),
                 globalVariables.getPassServer());
-        String[] types = new String[] {"MENU",urls[1]};
         HttpHeaders requestHeaders = new HttpHeaders();
         requestHeaders.setAuthorization(authHeader);
-        requestHeaders.setContentType(MediaType.APPLICATION_JSON);
-        //MultiValueMap<String, Object> body = new LinkedMultiValueMap<String, Object>();
-        //body.add("types", new String[] {"MENU",urls[1]});
-        HttpEntity<String[]> requestEntity = new HttpEntity<String[]>(types, requestHeaders);
+        HttpEntity<?> requestEntity = new HttpEntity<Object>(requestHeaders);
+
+        List<NameValuePair> params = new LinkedList<NameValuePair>();
+        params.add(new BasicNameValuePair("types", urls[1] + "," + "MENU"));
+
+        String paramString = URLEncodedUtils.format(params, "utf-8");
 
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
 
-        String url = urls[0].substring(0, urls[0].length()-1);
+        String url = urls[0] + paramString;
 
         ResponseEntity<ArrayList> responseEntity = restTemplate.exchange(url, HttpMethod.GET,
                 requestEntity,ArrayList.class);

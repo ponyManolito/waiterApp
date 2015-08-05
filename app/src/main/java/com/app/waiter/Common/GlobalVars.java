@@ -19,6 +19,7 @@ public class GlobalVars extends Application {
     private String table;
     private InOrder order;
     private HashMap<String, List<Content>> dataset = new HashMap<String, List<Content>>();
+    private HashMap<String, List<Content>> datasetMenu = new HashMap<String, List<Content>>();
 
     public String getServerIP() {
         return serverIP;
@@ -70,6 +71,10 @@ public class GlobalVars extends Application {
 
     public HashMap<String, List<Content>> getDataset() {
         return dataset;
+    }
+
+    public HashMap<String, List<Content>> getDatasetMenu() {
+        return datasetMenu;
     }
 
 }
