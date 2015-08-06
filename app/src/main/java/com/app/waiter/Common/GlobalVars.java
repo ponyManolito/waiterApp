@@ -77,4 +77,12 @@ public class GlobalVars extends Application {
         return datasetMenu;
     }
 
+    public void setDatasetMenu(HashMap<String, List<Content>> datasetMenu) {
+        this.datasetMenu = datasetMenu;
+    }
+
+    public void setDataset(HashMap<String, List<Content>> dataset) {
+        this.dataset = dataset;
+    }
+
 }

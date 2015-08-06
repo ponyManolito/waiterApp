@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.app.waiter.Common.GlobalVars;
 import com.app.waiter.Model.DataModel.OrderJSON.InOrder;
+import com.app.waiter.Model.List.Content;
 import com.app.waiter.tabswipe.adapter.TabPagerAdapter;
 import com.app.waiter.tabswipe.fragment.CheckOrderTabFragment;
 import com.app.waiter.tabswipe.fragment.MenuTabFragment;
@@ -33,6 +34,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.GsonHttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -157,6 +159,8 @@ public class MainWaiter extends ActionBarActivity implements ActionBar.TabListen
             if (urls[0].contains("unassignTable")) {
                 try {
                     unassignTableWS(urls);
+                    globalVariables.setDataset(new HashMap<String, List<Content>>());
+                    globalVariables.setDatasetMenu(new HashMap<String, List<Content>>());
                     result = "Mesa liberada";
                     goToConfigurePage();
                     finish();

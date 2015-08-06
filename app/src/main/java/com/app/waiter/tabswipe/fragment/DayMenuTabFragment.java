@@ -262,10 +262,11 @@ public class DayMenuTabFragment extends Fragment {
         requestHeaders.setAuthorization(authHeader);
         HttpEntity<?> requestEntity = new HttpEntity<Object>(requestHeaders);
 
-        List<NameValuePair> params = new LinkedList<NameValuePair>();
-        params.add(new BasicNameValuePair("types", urls[1] + "," + "MENU"));
+        //List<NameValuePair> params = new LinkedList<NameValuePair>();
+        //params.add(new BasicNameValuePair("types", urls[1] + "," + "MENU"));
 
-        String paramString = URLEncodedUtils.format(params, "utf-8");
+        //String paramString = URLEncodedUtils.format(params, "utf-8");
+        String paramString = "types=" + urls[1] + "," + "MENU";
 
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
